@@ -147,6 +147,22 @@ class RoleSelectionScreen extends StatelessWidget {
             duration: const Duration(milliseconds: 600),
             delay: const Duration(milliseconds: 200),
             child: _RoleCard(
+              icon: Icons.admin_panel_settings,
+              title: 'Admin',
+              description: 'Manage system and users',
+              color: Colors.red,
+              onTap: () {
+                final authProvider = context.read<AuthProvider>();
+                authProvider.setUserRole(UserRole.admin);
+                Navigator.of(context).pushNamed('/login');
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+          SlideInAnimation(
+            duration: const Duration(milliseconds: 600),
+            delay: const Duration(milliseconds: 300),
+            child: _RoleCard(
               icon: Icons.school,
               title: 'Teacher',
               description: 'Assess students and track progress',
@@ -163,13 +179,13 @@ class RoleSelectionScreen extends StatelessWidget {
             duration: const Duration(milliseconds: 600),
             delay: const Duration(milliseconds: 400),
             child: _RoleCard(
-              icon: Icons.family_restroom,
-              title: 'Parent',
-              description: 'Monitor your child\'s development',
-              color: Colors.green,
+              icon: Icons.person,
+              title: 'Student',
+              description: 'Complete learning assessments',
+              color: Colors.blue,
               onTap: () {
                 final authProvider = context.read<AuthProvider>();
-                authProvider.setUserRole(UserRole.parent);
+                authProvider.setUserRole(UserRole.student);
                 Navigator.of(context).pushNamed('/login');
               },
             ),
@@ -177,15 +193,15 @@ class RoleSelectionScreen extends StatelessWidget {
           const SizedBox(height: 16),
           SlideInAnimation(
             duration: const Duration(milliseconds: 600),
-            delay: const Duration(milliseconds: 600),
+            delay: const Duration(milliseconds: 500),
             child: _RoleCard(
-              icon: Icons.person,
-              title: 'Student',
-              description: 'Complete learning assessments',
-              color: Colors.purple,
+              icon: Icons.family_restroom,
+              title: 'Parent',
+              description: 'Monitor your child\'s development',
+              color: Colors.green,
               onTap: () {
                 final authProvider = context.read<AuthProvider>();
-                authProvider.setUserRole(UserRole.student);
+                authProvider.setUserRole(UserRole.parent);
                 Navigator.of(context).pushNamed('/login');
               },
             ),

@@ -147,34 +147,86 @@ class AssessmentService {
     String learnerId,
     int learnerAge,
   ) async {
+    debugPrint('\n📦 ========== CREATE ASSESSMENT SESSION ==========');
+    debugPrint('👤 Learner ID: $learnerId');
+    debugPrint('🎂 Learner Age: $learnerAge years');
+    
     final stage = getStageBageFromAge(learnerAge);
+    debugPrint('🎯 Determined Cognitive Stage: ${stage.displayName}');
+    debugPrint('📊 Stage Indicators: ${stage.indicators.join(", ")}');
+    
     final List<Question> questions = [];
+    debugPrint('📋 Initialized empty questions list');
 
-    debugPrint('🤖 Starting AI question generation for stage: ${stage.displayName}');
+    debugPrint('\n🤖 ========== STARTING AI QUESTION GENERATION ==========');
+    debugPrint('🏁 Target: 10 unique questions');
+    debugPrint('🔁 Max attempts: 3');
 
     for (var attempt = 1; attempt <= 3; attempt++) {
+      debugPrint('\n🔄 --- Attempt $attempt/3 ---');
       try {
+        debugPrint('📤 Calling _generateAiQuestions for stage: ${stage.displayName}');
         final batch = await _generateAiQuestions(stage, attempt: attempt);
+        debugPrint('✅ Attempt $attempt returned ${batch.length} questions');
+        
+        final beforeMerge = questions.length;
         _mergeUniqueQuestions(questions, batch, limit: 10);
-        debugPrint('✅ Attempt $attempt produced ${batch.length} items; unique so far: ${questions.length}');
-        if (questions.length >= 10) break;
+        final added = questions.length - beforeMerge;
+        debugPrint('🔀 Merged $added new unique questions (total now: ${questions.length})');
+        
+        if (questions.length >= 10) {
+          debugPrint('✅ Target reached! Have ${questions.length} unique questions');
+          break;
+        }
+        debugPrint('⚠️ Still need ${10 - questions.length} more questions');
       } catch (e, stackTrace) {
-        debugPrint('❌ Attempt $attempt failed: $e');
-        debugPrint('Stack trace: $stackTrace');
+        debugPrint('❌ Attempt $attempt FAILED');
+        debugPrint('❌ Error Type: ${e.runtimeType}');
+        debugPrint('❌ Error: $e');
+        debugPrint('📚 Stack trace: $stackTrace');
+        
+        if (attempt == 3) {
+          debugPrint('❌ All 3 attempts exhausted!');
+        } else {
+          debugPrint('🔁 Retrying with attempt ${attempt + 1}...');
+        }
       }
     }
 
+    debugPrint('\n📊 Final Results:');
+    debugPrint('   - Generated Questions: ${questions.length}');
+    debugPrint('   - Required: 10');
+    
     if (questions.length < 10) {
+      debugPrint('❌ ========== INSUFFICIENT QUESTIONS ==========');
+      debugPrint('❌ Only ${questions.length}/10 questions generated after 3 attempts');
+      debugPrint('❌ Please check:');
+      debugPrint('   1. Internet connection');
+      debugPrint('   2. GROQ_API_KEY in .env file');
+      debugPrint('   3. Groq API service status');
+      debugPrint('❌ =========================================\n');
       throw Exception('AI generation produced ${questions.length} unique questions after 3 attempts; need 10. Check internet and GROQ_API_KEY.');
     }
 
-    return AssessmentSession(
+    final finalQuestions = questions.take(10).toList();
+    debugPrint('✅ Using top ${finalQuestions.length} questions');
+    
+    final session = AssessmentSession(
       id: uuid.v4(),
       learnerId: learnerId,
       stageName: stage.displayName,
-      questions: questions.take(10).toList(),
+      questions: finalQuestions,
       startedAt: DateTime.now(),
     );
+    
+    debugPrint('\n✅ ========== SESSION CREATED SUCCESSFULLY ==========');
+    debugPrint('🆔 Session ID: ${session.id}');
+    debugPrint('🎯 Stage: ${session.stageName}');
+    debugPrint('📋 Questions: ${session.questions.length}');
+    debugPrint('⏰ Started At: ${session.startedAt}');
+    debugPrint('📦 ===============================================\n');
+    
+    return session;
   }
 
   static List<Question> _getDefaultQuestions(CognitiveStage stage) {
@@ -200,16 +252,21 @@ class AssessmentService {
 
   /// Generate up to 10 Piaget-aligned questions for the learner's cognitive stage using the AI backend.
   static Future<List<Question>> _generateAiQuestions(CognitiveStage stage, {int attempt = 1}) async {
-    debugPrint('🔧 Initializing Groq service (attempt $attempt)...');
+    debugPrint('\n🤖 ===== AI QUESTION GENERATION (Attempt $attempt) =====');
     final criteriaList = stage.indicators.join(', ');
     final stageLabel = stage.displayName;
+    debugPrint('🏷️ Stage: $stageLabel');
+    debugPrint('📊 Criteria: $criteriaList');
 
     late GroqService groqService;
     try {
+      debugPrint('🔧 Initializing Groq service...');
       groqService = GroqService();
       debugPrint('✅ Groq service initialized successfully');
-    } catch (e) {
-      debugPrint('❌ Failed to initialize Groq service: $e');
+    } catch (e, stackTrace) {
+      debugPrint('❌ Failed to initialize Groq service');
+      debugPrint('❌ Error: $e');
+      debugPrint('📚 Stack trace: $stackTrace');
       throw Exception('Groq client not configured: $e');
     }
 
@@ -244,26 +301,49 @@ Hard requirements:
 - Keep language stage-appropriate (simpler for younger learners).
 ''';
 
-    debugPrint('📤 Sending request to Groq API (attempt $attempt)...');
+    final temperature = attempt == 1 ? 0.45 : attempt == 2 ? 0.6 : 0.7;
+    debugPrint('\n🌡️ AI Parameters:');
+    debugPrint('   - Temperature: $temperature');
+    debugPrint('   - Max Tokens: 2000');
+    debugPrint('   - Attempt: $attempt/3');
+    
+    debugPrint('\n📤 Sending request to Groq API...');
+    debugPrint('⏱️ Request timestamp: ${DateTime.now()}');
+    
     final response = await groqService.generateJsonResponse(
       prompt,
-      temperature: attempt == 1 ? 0.45 : attempt == 2 ? 0.6 : 0.7,
+      temperature: temperature,
       maxTokens: 2000,
     );
-    debugPrint('📥 Received response from Groq API (attempt $attempt)');
+    
+    debugPrint('📥 Received response from Groq API');
+    debugPrint('⏱️ Response timestamp: ${DateTime.now()}');
+    debugPrint('📊 Response keys: ${response.keys.toList()}');
 
     final rawList = response['questions'] as List<dynamic>? ?? [];
     if (rawList.isEmpty) {
-      debugPrint('⚠️ API returned no questions on attempt $attempt. Raw keys: ${response.keys.toList()}');
+      debugPrint('⚠️ API returned EMPTY questions list on attempt $attempt');
+      debugPrint('📊 Raw response keys: ${response.keys.toList()}');
+      debugPrint('📊 Raw response: ${response.toString().substring(0, response.toString().length > 200 ? 200 : response.toString().length)}');
       throw Exception('AI returned 0 questions on attempt $attempt');
     }
-    debugPrint('📋 Parsing ${rawList.length} questions from API response...');
+    debugPrint('✅ API returned ${rawList.length} questions');
+
+    debugPrint('\n📝 Parsing questions from API response...');
+    int parseErrors = 0;
 
     final parsed = rawList.map((item) {
       final map = item as Map<String, dynamic>? ?? {};
       final text = (map['text'] ?? '').toString().trim();
       final criterion = (map['criterion'] ?? '').toString().trim();
       final responseTypeRaw = (map['responseType'] ?? '').toString();
+      
+      if (text.isEmpty || criterion.isEmpty) {
+        parseErrors++;
+        debugPrint('⚠️ Skipping invalid question: text="$text", criterion="$criterion"');
+        return null;
+      }
+      
       ResponseType responseType;
       switch (responseTypeRaw) {
         case 'multipleChoice':
@@ -281,8 +361,6 @@ Hard requirements:
 
       final scoringRules = map['scoringRules'] as Map<String, dynamic>?;
 
-      if (text.isEmpty || criterion.isEmpty) return null;
-
       return Question(
         id: uuid.v4(),
         text: text,
@@ -294,21 +372,35 @@ Hard requirements:
       );
     }).whereType<Question>().toList();
 
-    debugPrint('✅ Parsed ${parsed.length} valid questions');
+    if (parseErrors > 0) {
+      debugPrint('⚠️ Encountered $parseErrors parsing errors in API response');
+    }
+    debugPrint('✅ Successfully parsed ${parsed.length}/${rawList.length} questions');
 
     // Deduplicate by (criterion, text)
+    debugPrint('\n🔀 Deduplicating questions...');
     final seen = <String>{};
     final unique = <Question>[];
+    int duplicates = 0;
+    
     for (final q in parsed) {
       final key = '${q.criterion.toLowerCase()}::${q.text.toLowerCase()}';
       if (!seen.contains(key)) {
         seen.add(key);
         unique.add(q);
+      } else {
+        duplicates++;
       }
       if (unique.length >= 10) break;
     }
 
-    debugPrint('🎯 Returning ${unique.length} unique questions');
+    debugPrint('📋 Deduplicated: ${parsed.length} → ${unique.length} unique questions');
+    if (duplicates > 0) {
+      debugPrint('⚠️ Removed $duplicates duplicate questions');
+    }
+    
+    debugPrint('\n🏁 Returning ${unique.length} unique questions from attempt $attempt');
+    debugPrint('🤖 ==========================================\n');
     return unique;
   }
 

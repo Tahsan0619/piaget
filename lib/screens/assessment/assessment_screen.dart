@@ -40,7 +40,7 @@ class _AssessmentScreenState extends State<AssessmentScreen> with TickerProvider
     super.dispose();
   }
 
-  void _submitAnswer(String answer, int timeSpent) {
+  void _submitAnswer(String answer, int timeSpent) async {
     final assessmentProvider = context.read<AssessmentProvider>();
     final session = assessmentProvider.currentSession;
 
@@ -62,9 +62,15 @@ class _AssessmentScreenState extends State<AssessmentScreen> with TickerProvider
           curve: Curves.easeOutCubic,
         );
       } else {
-        // Last question answered
-        assessmentProvider.completeAssessment();
-        _showCompletionDialog();
+        // Last question answered - save to database
+        debugPrint('📝 Last question answered, completing assessment...');
+        await assessmentProvider.completeAssessment();
+        debugPrint('✅ Assessment completion process finished');
+        
+        // Check if widget is still mounted before showing dialog
+        if (mounted) {
+          _showCompletionDialog();
+        }
       }
     }
   }

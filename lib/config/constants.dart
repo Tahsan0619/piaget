@@ -7,12 +7,10 @@ class AppConstants {
 
   // Assessment Configuration
   static const int defaultQuestionsPerAssessment = 10;
-  static const int minLearnAge = 0;
+  static const int minLearnAge = 7;
   static const int maxLearnAge = 18;
 
   // Piaget's Cognitive Stages Age Ranges
-  static const int sensoriomotorMaxAge = 2;
-  static const int preoperationalMaxAge = 7;
   static const int concreteOperationalMaxAge = 11;
   // Formal operational starts at 11+
 

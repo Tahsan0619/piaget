@@ -1,6 +1,6 @@
 enum CriterionStatus { achieved, developing, notYetAchieved }
 
-enum ResponseType { yesNo, multipleChoice, shortAnswer }
+enum ResponseType { yesNo, multipleChoice, shortAnswer, matching }
 
 class Question {
   final String id;
@@ -11,6 +11,7 @@ class Question {
   final List<String>? options;
   final String? correctAnswer;
   final Map<String, dynamic>? scoringRules;
+  final Map<String, String>? matchingPairs; // left -> right correct mapping
 
   Question({
     required this.id,
@@ -21,9 +22,14 @@ class Question {
     this.options,
     this.correctAnswer,
     this.scoringRules,
+    this.matchingPairs,
   });
 
   factory Question.fromJson(Map<String, dynamic> json) {
+    Map<String, String>? pairs;
+    if (json['matchingPairs'] != null) {
+      pairs = Map<String, String>.from(json['matchingPairs'] as Map);
+    }
     return Question(
       id: json['id'] as String,
       text: json['text'] as String,
@@ -33,6 +39,7 @@ class Question {
       options: List<String>.from(json['options'] as List? ?? []),
       correctAnswer: json['correctAnswer'] as String?,
       scoringRules: json['scoringRules'] as Map<String, dynamic>?,
+      matchingPairs: pairs,
     );
   }
 
@@ -45,6 +52,7 @@ class Question {
     'options': options,
     'correctAnswer': correctAnswer,
     'scoringRules': scoringRules,
+    'matchingPairs': matchingPairs,
   };
 }
 

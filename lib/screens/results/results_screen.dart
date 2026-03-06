@@ -6,6 +6,7 @@ import 'package:piaget/models/user_model.dart';
 import 'package:piaget/utils/responsive.dart';
 import 'package:piaget/widgets/animations.dart';
 import 'package:piaget/widgets/enhanced_widgets.dart';
+import 'package:piaget/services/pdf_service.dart';
 
 class ResultsScreen extends StatelessWidget {
   const ResultsScreen({super.key});
@@ -301,8 +302,6 @@ class ResultsScreen extends StatelessWidget {
 
   Widget _buildCognitiveStageCard(BuildContext context, AssessmentResult result) {
     final stageColors = {
-      'Sensorimotor (0-2 years)': Colors.blue,
-      'Preoperational (2-7 years)': Colors.purple,
       'Concrete Operational (7-11 years)': Colors.orange,
       'Formal Operational (11+ years)': Colors.green,
     };
@@ -564,34 +563,6 @@ class ResultsScreen extends StatelessWidget {
   }
 
   Widget _buildRecommendations(BuildContext context, AssessmentResult result) {
-    final recommendations = [
-      if (result.overallScore < 70)
-        {
-          'icon': Icons.book,
-          'title': 'Review Fundamentals',
-          'description': 'Focus on basic concepts to build a strong foundation',
-          'color': Colors.blue,
-        },
-      {
-        'icon': Icons.groups,
-        'title': 'Interactive Learning',
-        'description': 'Engage in group activities and peer learning',
-        'color': Colors.purple,
-      },
-      {
-        'icon': Icons.extension,
-        'title': 'Problem Solving',
-        'description': 'Practice puzzles and logical thinking exercises',
-        'color': Colors.orange,
-      },
-      {
-        'icon': Icons.explore,
-        'title': 'Explore & Discover',
-        'description': 'Encourage curiosity through hands-on experiences',
-        'color': Colors.green,
-      },
-    ];
-
     return SlideInAnimation(
       delay: const Duration(milliseconds: 1000),
       child: Container(
@@ -614,58 +585,149 @@ class ResultsScreen extends StatelessWidget {
               children: [
                 Icon(Icons.lightbulb, color: Colors.amber.shade700, size: 28),
                 const SizedBox(width: 12),
-                Text(
-                  'Recommendations',
-                  style: TextStyle(
-                    fontSize: Responsive.fontSize(context, 22),
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    'Personalized Development Plan',
+                    style: TextStyle(
+                      fontSize: Responsive.fontSize(context, 22),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
             ),
+            const SizedBox(height: 8),
+            Text(
+              'Research-based activities tailored to ${result.assessmentStage} stage',
+              style: TextStyle(
+                fontSize: Responsive.fontSize(context, 14),
+                color: Colors.grey.shade600,
+              ),
+            ),
             const SizedBox(height: 24),
-            ...recommendations.map((rec) => Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: (rec['color'] as Color).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(
-                          rec['icon'] as IconData,
-                          color: rec['color'] as Color,
-                          size: 24,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              rec['title'] as String,
-                              style: TextStyle(
-                                fontSize: Responsive.fontSize(context, 16),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              rec['description'] as String,
-                              style: TextStyle(
-                                fontSize: Responsive.fontSize(context, 14),
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+            ...result.suggestedActivities.asMap().entries.map((entry) {
+              final index = entry.key;
+              final activity = entry.value;
+              
+              // Parse activity type from emoji
+              Color activityColor = Colors.blue;
+              IconData activityIcon = Icons.school;
+              String activityType = 'Activity';
+              
+              if (activity.startsWith('🎯')) {
+                activityColor = Colors.red;
+                activityIcon = Icons.priority_high;
+                activityType = 'Priority Focus';
+              } else if (activity.startsWith('📈')) {
+                activityColor = Colors.orange;
+                activityIcon = Icons.trending_up;
+                activityType = 'Reinforce';
+              } else if (activity.startsWith('💡')) {
+                activityColor = Colors.purple;
+                activityIcon = Icons.auto_awesome;
+                activityType = 'Enrichment';
+              } else if (activity.startsWith('🌟')) {
+                activityColor = Colors.green;
+                activityIcon = Icons.celebration;
+                activityType = 'Continue';
+              }
+              
+              // Remove emoji from text
+              final cleanText = activity.replaceFirst(RegExp(r'^[🎯📈💡🌟]\s*'), '');
+              
+              return Container(
+                margin: const EdgeInsets.only(bottom: 20),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: activityColor.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: activityColor.withOpacity(0.2),
+                    width: 2,
                   ),
-                )),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: activityColor.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(activityIcon, color: activityColor, size: 16),
+                              const SizedBox(width: 6),
+                              Text(
+                                activityType,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: activityColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '#${index + 1}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey.shade700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      cleanText,
+                      style: TextStyle(
+                        fontSize: Responsive.fontSize(context, 15),
+                        color: Colors.grey.shade800,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.blue.shade200),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, color: Colors.blue.shade700, size: 24),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'These activities are based on Piaget\'s research and are designed to support cognitive development at the ${result.assessmentStage} stage.',
+                      style: TextStyle(
+                        fontSize: Responsive.fontSize(context, 13),
+                        color: Colors.blue.shade900,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -673,54 +735,130 @@ class ResultsScreen extends StatelessWidget {
   }
 
   Widget _buildActionButtons(BuildContext context) {
-    return FadeInAnimation(
-      delay: const Duration(milliseconds: 1200),
-      child: Column(
-        children: [
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.of(context).pushReplacementNamed('/dashboard');
-              },
-              icon: const Icon(Icons.home, size: 24),
-              label: const Text('Back to Dashboard'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue.shade700,
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: () {
-                // Share functionality would go here
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Results shared successfully!'),
-                    backgroundColor: Colors.green.shade700,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return Consumer<AssessmentProvider>(
+      builder: (context, assessmentProvider, _) {
+        final result = assessmentProvider.lastResult;
+        final learner = assessmentProvider.currentLearner;
+
+        return FadeInAnimation(
+          delay: const Duration(milliseconds: 1200),
+          child: Column(
+            children: [
+              // PDF Buttons Row
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: result != null && learner != null
+                          ? () async {
+                              try {
+                                await PdfService.generateAndShareReport(result, learner);
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Failed to generate PDF: $e'),
+                                      backgroundColor: Colors.red.shade700,
+                                      behavior: SnackBarBehavior.floating,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    ),
+                                  );
+                                }
+                              }
+                            }
+                          : null,
+                      icon: const Icon(Icons.picture_as_pdf, size: 22),
+                      label: const Text('Download PDF'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.shade600,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ),
-                );
-              },
-              icon: const Icon(Icons.share, size: 24),
-              label: const Text('Share Results'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.blue.shade700,
-                side: BorderSide(color: Colors.blue.shade700, width: 2),
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: result != null && learner != null
+                          ? () async {
+                              try {
+                                await PdfService.printReport(result, learner);
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Failed to print: $e'),
+                                      backgroundColor: Colors.red.shade700,
+                                      behavior: SnackBarBehavior.floating,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    ),
+                                  );
+                                }
+                              }
+                            }
+                          : null,
+                      icon: const Icon(Icons.print, size: 22),
+                      label: const Text('Print Report'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal.shade600,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacementNamed('/dashboard');
+                  },
+                  icon: const Icon(Icons.home, size: 24),
+                  label: const Text('Back to Dashboard'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue.shade700,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Results shared successfully!'),
+                        backgroundColor: Colors.green.shade700,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.share, size: 24),
+                  label: const Text('Share Results'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.blue.shade700,
+                    side: BorderSide(color: Colors.blue.shade700, width: 2),
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

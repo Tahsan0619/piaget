@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Piaget — AI-Powered Cognitive Development Assessment</title>
+  <meta name="description" content="Piaget uses AI to assess children's cognitive development based on Jean Piaget's theory. Identify cognitive stages, get detailed reports, and personalized activity recommendations." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="#" class="nav-logo">
+        <span class="logo-icon">🧠</span>
+        <span class="logo-text">Piaget</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#stages">Stages</a></li>
+        <li><a href="#ai-engine">AI Engine</a></li>
+        <li><a href="#demo">Demo</a></li>
+        <li><a href="#activities">Activities</a></li>
+      </ul>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+    <div class="container hero-container">
+      <div class="hero-content">
+        <div class="hero-badge">🤖 Powered by AI &bull; LLaMA 3.3 70B</div>
+        <h1 class="hero-title">
+          Understand Your Child's<br />
+          <span class="gradient-text">Cognitive Development</span>
+        </h1>
+        <p class="hero-subtitle">
+          Piaget is an AI-powered assessment tool that evaluates children's cognitive development using 
+          <strong>Jean Piaget's scientifically-backed theory</strong>. Get instant AI-generated assessments, 
+          detailed reports, and personalized activity recommendations.
+        </p>
+        <div class="hero-actions">
+          <a href="#demo" class="btn btn-primary btn-lg">Try Live Demo</a>
+          <a href="#how-it-works" class="btn btn-outline btn-lg">See How It Works</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat">
+            <strong>4</strong>
+            <span>Cognitive Stages</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <strong>40+</strong>
+            <span>Indicators Assessed</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <strong>10</strong>
+            <span>AI Questions / Session</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <strong>0-18</strong>
+            <span>Age Range (Years)</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="phone-mockup">
+          <div class="phone-screen">
+            <div class="mock-header">
+              <div class="mock-status-bar">
+                <span>9:41</span>
+                <span>●●● ▮▮</span>
+              </div>
+              <div class="mock-app-bar">
+                <span>←</span>
+                <span>Question 3/10</span>
+                <span>⭐ 2</span>
+              </div>
+              <div class="mock-progress">
+                <div class="mock-progress-fill" style="width: 30%"></div>
+              </div>
+            </div>
+            <div class="mock-body">
+              <div class="mock-tag">Concrete Operational</div>
+              <p class="mock-question">If Tom is taller than Sara, and Sara is taller than Mike, who is the tallest?</p>
+              <div class="mock-info">🔍 Transitive Inference</div>
+              <div class="mock-option mock-option-blue">○ Tom</div>
+              <div class="mock-option mock-option-purple">○ Sara</div>
+              <div class="mock-option mock-option-orange">○ Mike</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURES SECTION ===== -->
+  <section class="section features-section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Features</span>
+        <h2 class="section-title">Everything You Need for<br /><span class="gradient-text">Cognitive Assessment</span></h2>
+        <p class="section-desc">A comprehensive AI-powered tool built on decades of developmental psychology research.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card feature-highlight">
+          <div class="feature-icon-wrap" style="background: linear-gradient(135deg, #0066CC, #66B3FF)">
+            <span class="feature-icon">🤖</span>
+          </div>
+          <h3>AI-Powered Assessments</h3>
+          <p>Groq's LLaMA 3.3 70B generates sophisticated, research-backed questions in real-time. Each session creates 10 unique questions—7 MCQ and 3 descriptive—tailored to the child's cognitive stage.</p>
+          <div class="feature-tags">
+            <span class="tag">LLaMA 3.3 70B</span>
+            <span class="tag">Groq API</span>
+            <span class="tag">Dynamic</span>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrap" style="background: linear-gradient(135deg, #9966FF, #CC99FF)">
+            <span class="feature-icon">🧩</span>
+          </div>
+          <h3>4 Piaget Stages</h3>
+          <p>Covers all stages from Sensorimotor (0-2) to Formal Operational (11+), each with 10 specific cognitive indicators assessed through targeted questions.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrap" style="background: linear-gradient(135deg, #00CC66, #66FF99)">
+            <span class="feature-icon">📊</span>
+          </div>
+          <h3>Detailed Scoring</h3>
+          <p>Three-tier evaluation system — Achieved (80+), Developing (50-79), Not Yet Achieved (&lt;50) — with per-criterion breakdowns and cognitive marker explanations.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrap" style="background: linear-gradient(135deg, #FFAA00, #FFCC66)">
+            <span class="feature-icon">🎯</span>
+          </div>
+          <h3>Personalized Activities</h3>
+          <p>AI generates tailored activity recommendations with materials needed and duration, targeting each child's specific development areas.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrap" style="background: linear-gradient(135deg, #CC0066, #FF6699)">
+            <span class="feature-icon">👥</span>
+          </div>
+          <h3>Role-Based Access</h3>
+          <p>Separate flows for Parents, Teachers, and Students — each with tailored interfaces, insights, and recommendation styles.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrap" style="background: linear-gradient(135deg, #0099CC, #66CCFF)">
+            <span class="feature-icon">📱</span>
+          </div>
+          <h3>Cross-Platform</h3>
+          <p>Built with Flutter — runs natively on iOS, Android, Web, Windows, macOS, and Linux with responsive layouts for every screen size.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOW IT WORKS ===== -->
+  <section class="section how-section" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Process</span>
+        <h2 class="section-title">How <span class="gradient-text">Piaget</span> Works</h2>
+        <p class="section-desc">From role selection to personalized insights — in under 10 minutes.</p>
+      </div>
+      <div class="steps-timeline">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <div class="step-icon">🎭</div>
+            <h3>Select Your Role</h3>
+            <p>Choose Parent, Teacher, or Student. Each role unlocks a tailored assessment experience with relevant features and insights.</p>
+          </div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <div class="step-icon">👤</div>
+            <h3>Create Learner Profile</h3>
+            <p>Enter the learner's name and age. The system automatically maps the age to the correct Piaget cognitive stage and loads the assessment.</p>
+          </div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <div class="step-icon">🤖</div>
+            <h3>AI Generates Questions</h3>
+            <p>LLaMA 3.3 70B generates 10 unique, stage-appropriate questions — 7 advanced MCQs and 3 descriptive prompts — each assessing different cognitive indicators.</p>
+          </div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <div class="step-icon">✍️</div>
+            <h3>Complete Assessment</h3>
+            <p>Answer each question through interactive MCQ buttons or descriptive text input. Real-time progress tracking and animated transitions keep engagement high.</p>
+          </div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-card">
+          <div class="step-number">5</div>
+          <div class="step-content">
+            <div class="step-icon">📊</div>
+            <h3>Get Detailed Results</h3>
+            <p>Receive a comprehensive report: overall score, identified stage, per-criterion breakdown with status (Achieved / Developing / Not Yet), strengths, development areas, and personalized activity recommendations.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== COGNITIVE STAGES ===== -->
+  <section class="section stages-section" id="stages">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Piaget's Theory</span>
+        <h2 class="section-title">The Four <span class="gradient-text">Cognitive Stages</span></h2>
+        <p class="section-desc">Each stage represents a qualitatively different way of thinking, with 10 specific indicators assessed.</p>
+      </div>
+      <div class="stages-grid">
+        <!-- Sensorimotor -->
+        <div class="stage-card stage-sensorimotor">
+          <div class="stage-header">
+            <div class="stage-age">0–2 yrs</div>
+            <div class="stage-badge">Stage 1</div>
+          </div>
+          <h3>Sensorimotor</h3>
+          <p class="stage-desc">Learning through senses and motor actions. Infants develop object permanence and begin to understand cause-effect relationships.</p>
+          <div class="stage-indicators">
+            <h4>Key Indicators</h4>
+            <div class="indicator-chips">
+              <span>Object Permanence</span>
+              <span>Cause-Effect</span>
+              <span>Goal-Directed Behavior</span>
+              <span>Imitation</span>
+              <span>Sensory Exploration</span>
+              <span>Coordination of Actions</span>
+              <span>Recognition</span>
+              <span>Trial & Error Learning</span>
+              <span>Anticipation</span>
+              <span>Mental Representation</span>
+            </div>
+          </div>
+          <div class="stage-sample">
+            <h4>Sample Assessment</h4>
+            <p><em>"When an object is hidden, does it still exist?"</em></p>
+          </div>
+        </div>
+
+        <!-- Preoperational -->
+        <div class="stage-card stage-preoperational">
+          <div class="stage-header">
+            <div class="stage-age">2–7 yrs</div>
+            <div class="stage-badge">Stage 2</div>
+          </div>
+          <h3>Preoperational</h3>
+          <p class="stage-desc">Symbolic but illogical thinking. Children develop language and pretend play but struggle with logic, conservation, and taking others' perspectives.</p>
+          <div class="stage-indicators">
+            <h4>Key Indicators</h4>
+            <div class="indicator-chips">
+              <span>Symbolic Thinking</span>
+              <span>Egocentrism</span>
+              <span>Centration</span>
+              <span>Conservation</span>
+              <span>Animistic Thinking</span>
+              <span>Irreversibility</span>
+              <span>Intuitive Thought</span>
+              <span>Pretend Play</span>
+              <span>Perceptual Dominance</span>
+              <span>Egocentric Speech</span>
+            </div>
+          </div>
+          <div class="stage-sample">
+            <h4>Sample Assessment</h4>
+            <p><em>"Imagine a tree feels sad when its leaves fall. Is this true?"</em></p>
+          </div>
+        </div>
+
+        <!-- Concrete Operational -->
+        <div class="stage-card stage-concrete">
+          <div class="stage-header">
+            <div class="stage-age">7–11 yrs</div>
+            <div class="stage-badge">Stage 3</div>
+          </div>
+          <h3>Concrete Operational</h3>
+          <p class="stage-desc">Logical thinking about concrete objects. Children master conservation, classification, and transitive inference but struggle with abstract concepts.</p>
+          <div class="stage-indicators">
+            <h4>Key Indicators</h4>
+            <div class="indicator-chips">
+              <span>Conservation</span>
+              <span>Reversibility</span>
+              <span>Decentration</span>
+              <span>Classification</span>
+              <span>Seriation</span>
+              <span>Transitive Inference</span>
+              <span>Logical Operations</span>
+              <span>Cause-Effect Reasoning</span>
+              <span>Perspective-Taking</span>
+              <span>Concrete Problem Solving</span>
+            </div>
+          </div>
+          <div class="stage-sample">
+            <h4>Sample Assessment</h4>
+            <p><em>"If Tom is taller than Sara, and Sara is taller than Mike, who is the tallest?"</em></p>
+          </div>
+        </div>
+
+        <!-- Formal Operational -->
+        <div class="stage-card stage-formal">
+          <div class="stage-header">
+            <div class="stage-age">11+ yrs</div>
+            <div class="stage-badge">Stage 4</div>
+          </div>
+          <h3>Formal Operational</h3>
+          <p class="stage-desc">Abstract and hypothetical thinking. Adolescents reason about possibilities, use deductive logic, and consider multiple perspectives systematically.</p>
+          <div class="stage-indicators">
+            <h4>Key Indicators</h4>
+            <div class="indicator-chips">
+              <span>Abstract Thinking</span>
+              <span>Hypothetical Reasoning</span>
+              <span>Hypothetico-Deductive</span>
+              <span>Systematic Problem Solving</span>
+              <span>Metacognition</span>
+              <span>Moral Reasoning</span>
+              <span>Relativistic Thinking</span>
+              <span>Propositional Logic</span>
+              <span>Future Orientation</span>
+              <span>Ideological Thinking</span>
+            </div>
+          </div>
+          <div class="stage-sample">
+            <h4>Sample Assessment</h4>
+            <p><em>"Imagine a society where no rules existed. Which statement best represents sophisticated thinking about the consequences?"</em></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== AI ENGINE ===== -->
+  <section class="section ai-section" id="ai-engine">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">AI Engine</span>
+        <h2 class="section-title">Under the Hood:<br /><span class="gradient-text">How the AI Works</span></h2>
+        <p class="section-desc">A deep look at the intelligent assessment engine powering Piaget.</p>
+      </div>
+      <div class="ai-grid">
+        <div class="ai-card ai-card-main">
+          <h3>🧬 The Assessment Pipeline</h3>
+          <div class="pipeline">
+            <div class="pipe-step">
+              <div class="pipe-label">Input</div>
+              <div class="pipe-box">Learner age → Stage mapping → 10 cognitive indicators</div>
+            </div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-step">
+              <div class="pipe-label">AI Generation</div>
+              <div class="pipe-box">LLaMA 3.3 70B generates 10 unique questions with scoring rubrics</div>
+            </div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-step">
+              <div class="pipe-label">Quality Control</div>
+              <div class="pipe-box">3 attempts with deduplication &amp; validation — ensures uniqueness</div>
+            </div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-step">
+              <div class="pipe-label">Output</div>
+              <div class="pipe-box">7 MCQ + 3 Descriptive questions, each assessing different indicators</div>
+            </div>
+          </div>
+        </div>
+        <div class="ai-card">
+          <h3>🎯 Scoring Intelligence</h3>
+          <div class="scoring-demo">
+            <div class="score-tier">
+              <div class="score-bar achieved"></div>
+              <div class="score-info">
+                <strong>80–100 — Achieved</strong>
+                <p>Stage-appropriate reasoning. Demonstrates decentration, logical operations, or abstract thinking.</p>
+              </div>
+            </div>
+            <div class="score-tier">
+              <div class="score-bar developing"></div>
+              <div class="score-info">
+                <strong>50–79 — Developing</strong>
+                <p>Transitional thinking. Shows emerging understanding but lacks full logical structure.</p>
+              </div>
+            </div>
+            <div class="score-tier">
+              <div class="score-bar not-achieved"></div>
+              <div class="score-info">
+                <strong>0–49 — Not Yet Achieved</strong>
+                <p>Pre-stage patterns. Centration, egocentrism, or concrete-only thinking detected.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ai-card">
+          <h3>⚙️ Technical Specs</h3>
+          <div class="spec-list">
+            <div class="spec-row"><span class="spec-key">Model</span><span class="spec-val">LLaMA 3.3 70B Versatile</span></div>
+            <div class="spec-row"><span class="spec-key">Provider</span><span class="spec-val">Groq API</span></div>
+            <div class="spec-row"><span class="spec-key">Temperature</span><span class="spec-val">0.7–0.8 (dynamic)</span></div>
+            <div class="spec-row"><span class="spec-key">Max Tokens</span><span class="spec-val">4,000 per request</span></div>
+            <div class="spec-row"><span class="spec-key">Output Format</span><span class="spec-val">Structured JSON</span></div>
+            <div class="spec-row"><span class="spec-key">Retry Strategy</span><span class="spec-val">3 attempts with dedup</span></div>
+            <div class="spec-row"><span class="spec-key">Questions/Session</span><span class="spec-val">10 (7 MCQ + 3 Descriptive)</span></div>
+            <div class="spec-row"><span class="spec-key">Criteria/Stage</span><span class="spec-val">10 unique indicators</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="prompt-showcase">
+        <h3>📝 AI Prompt Architecture</h3>
+        <p class="prompt-desc">The system prompt instructs the AI to act as an expert developmental psychologist specializing in Piaget's theory. It enforces:</p>
+        <div class="prompt-features">
+          <div class="prompt-feat">
+            <span class="prompt-feat-icon">🧠</span>
+            <div>
+              <strong>Piaget-Aligned Precision</strong>
+              <p>Each question directly assesses one specific cognitive criterion with options spanning pre-stage → developing → achieved thinking patterns.</p>
+            </div>
+          </div>
+          <div class="prompt-feat">
+            <span class="prompt-feat-icon">🎓</span>
+            <div>
+              <strong>Age-Appropriate Complexity</strong>
+              <p>Language and scenarios automatically adapt: simple concrete for ages 2-7, logical relationships for 7-11, abstract/hypothetical for 11+.</p>
+            </div>
+          </div>
+          <div class="prompt-feat">
+            <span class="prompt-feat-icon">📊</span>
+            <div>
+              <strong>Intelligent Scoring Rubrics</strong>
+              <p>Every MCQ option includes Piaget-specific cognitive markers in its scoring—not just right/wrong, but developmental reasoning analysis.</p>
+            </div>
+          </div>
+          <div class="prompt-feat">
+            <span class="prompt-feat-icon">🔄</span>
+            <div>
+              <strong>Uniqueness & Diversity</strong>
+              <p>No two questions share scenarios or phrasing. Domains vary: physical, social, logical, symbolic, and moral reasoning.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== LIVE DEMO ===== -->
+  <section class="section demo-section" id="demo">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Try It</span>
+        <h2 class="section-title">Interactive <span class="gradient-text">Demo</span></h2>
+        <p class="section-desc">Experience the Piaget assessment flow right here. Select an age to see stage-appropriate questions.</p>
+      </div>
+      <div class="demo-container">
+        <div class="demo-sidebar">
+          <h3>Learner Profile</h3>
+          <div class="demo-field">
+            <label for="demoName">Learner Name</label>
+            <input type="text" id="demoName" value="Alex" placeholder="Enter name" />
+          </div>
+          <div class="demo-field">
+            <label>Select Age</label>
+            <div class="age-chips" id="ageChips">
+              <button class="age-chip" data-age="1">1</button>
+              <button class="age-chip" data-age="3">3</button>
+              <button class="age-chip" data-age="5">5</button>
+              <button class="age-chip active" data-age="8">8</button>
+              <button class="age-chip" data-age="10">10</button>
+              <button class="age-chip" data-age="12">12</button>
+              <button class="age-chip" data-age="15">15</button>
+            </div>
+          </div>
+          <div class="demo-stage-info" id="demoStageInfo">
+            <div class="dsi-label">Detected Stage</div>
+            <div class="dsi-value" id="demoStageName">Concrete Operational</div>
+            <div class="dsi-desc" id="demoStageDesc">Logical thinking about concrete objects (Ages 7-11)</div>
+          </div>
+          <button class="btn btn-primary btn-block" id="startDemoBtn">Start Assessment</button>
+        </div>
+        <div class="demo-main">
+          <div class="demo-welcome" id="demoWelcome">
+            <div class="demo-welcome-icon">🧠</div>
+            <h3>Welcome to Piaget Assessment</h3>
+            <p>Set up the learner profile on the left and click "Start Assessment" to begin the interactive demo. You'll experience the same AI-quality questions used in the actual app.</p>
+            <div class="demo-welcome-features">
+              <span>✦ MCQ Questions</span>
+              <span>✦ Descriptive Prompts</span>
+              <span>✦ Instant Scoring</span>
+              <span>✦ Stage-Appropriate</span>
+            </div>
+          </div>
+          <div class="demo-assessment hidden" id="demoAssessment">
+            <div class="demo-topbar">
+              <span id="demoQNum">Question 1/5</span>
+              <div class="demo-progress-bar">
+                <div class="demo-progress-fill" id="demoProgressFill"></div>
+              </div>
+              <span id="demoScore">Score: 0</span>
+            </div>
+            <div class="demo-question-area" id="demoQuestionArea">
+              <!-- Dynamically filled -->
+            </div>
+          </div>
+          <div class="demo-results hidden" id="demoResults">
+            <!-- Dynamically filled -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ACTIVITIES ===== -->
+  <section class="section activities-section" id="activities">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Recommendations</span>
+        <h2 class="section-title">Personalized <span class="gradient-text">Activity Suggestions</span></h2>
+        <p class="section-desc">Based on assessment results, Piaget recommends targeted activities for each development area.</p>
+      </div>
+
+      <div class="activity-tabs">
+        <button class="activity-tab active" data-stage="preoperational">Preoperational (2-7)</button>
+        <button class="activity-tab" data-stage="concrete">Concrete (7-11)</button>
+        <button class="activity-tab" data-stage="formal">Formal (11+)</button>
+      </div>
+
+      <div class="activity-content" id="activityContent">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TECH STACK ===== -->
+  <section class="section tech-section" id="tech">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Technology</span>
+        <h2 class="section-title">Built With <span class="gradient-text">Modern Tech</span></h2>
+      </div>
+      <div class="tech-grid">
+        <div class="tech-card">
+          <div class="tech-icon">💙</div>
+          <h4>Flutter 3.x</h4>
+          <p>Cross-platform UI framework</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">🎯</div>
+          <h4>Dart 3.8+</h4>
+          <p>Sound null safety</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">🤖</div>
+          <h4>Groq API</h4>
+          <p>Ultra-fast AI inference</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">🦙</div>
+          <h4>LLaMA 3.3 70B</h4>
+          <p>Advanced language model</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">🧩</div>
+          <h4>Provider</h4>
+          <p>State management</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">🎨</div>
+          <h4>Material 3</h4>
+          <p>Modern design system</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <span class="logo-icon">🧠</span>
+          <span class="logo-text">Piaget</span>
+          <p>AI-Powered Cognitive Development Assessment based on Jean Piaget's theory of cognitive development.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Quick Links</h4>
+          <a href="#features">Features</a>
+          <a href="#how-it-works">How It Works</a>
+          <a href="#stages">Cognitive Stages</a>
+          <a href="#demo">Try Demo</a>
+        </div>
+        <div class="footer-links">
+          <h4>AI Tools</h4>
+          <a href="#ai-engine">AI Engine</a>
+          <a href="#activities">Activities</a>
+          <a href="#tech">Tech Stack</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Piaget — AI-Powered Cognitive Assessment. Built with ❤️ and Flutter.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="env.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

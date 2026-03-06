@@ -19,6 +19,9 @@ class _AssessmentScreenState extends State<AssessmentScreen> with TickerProvider
   String? _selectedAnswer;
   late AnimationController _progressController;
   int _score = 0;
+  // Matching question state
+  final Map<String, Map<String, String?>> _matchingSelections = {}; // questionId -> {leftItem: selectedRight}
+  String? _dragSource;
 
   @override
   void initState() {
@@ -507,8 +510,9 @@ class _AssessmentScreenState extends State<AssessmentScreen> with TickerProvider
         return _buildMultipleChoice(question);
       case ResponseType.shortAnswer:
         return _buildShortAnswer(question);
+      case ResponseType.matching:
+        return _buildMatchingQuestion(question);
     }
-    return const SizedBox.shrink();
   }
 
   Widget _buildYesNoButtons(Question question) {
@@ -641,41 +645,77 @@ class _AssessmentScreenState extends State<AssessmentScreen> with TickerProvider
     );
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Colors.amber.shade50,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.amber.shade200),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.edit_note, color: Colors.amber.shade700, size: 20),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Type your detailed answer below',
+                  style: TextStyle(
+                    fontSize: Responsive.fontSize(context, 14),
+                    color: Colors.amber.shade900,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
         TextField(
           controller: controller,
-          maxLines: 4,
+          maxLines: 5,
+          minLines: 4,
           decoration: InputDecoration(
-            hintText: 'Type your answer here...',
-            hintStyle: TextStyle(color: Colors.grey.shade400),
+            hintText: 'Enter your thoughtful answer here...',
+            hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 16),
             filled: true,
             fillColor: Colors.grey.shade50,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.blue.shade700, width: 2),
+              borderSide: BorderSide(color: Colors.blue.shade700, width: 2.5),
             ),
+            contentPadding: const EdgeInsets.all(16),
           ),
-          style: TextStyle(fontSize: Responsive.fontSize(context, 16)),
+          style: TextStyle(
+            fontSize: Responsive.fontSize(context, 16),
+            height: 1.5,
+            color: Colors.grey.shade900,
+          ),
         ),
         const SizedBox(height: 24),
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
             onPressed: () {
-              if (controller.text.isNotEmpty) {
-                _submitAnswer(controller.text, 0);
+              if (controller.text.trim().isNotEmpty) {
+                _submitAnswer(controller.text.trim(), 0);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Row(
+                    content: Row(
                       children: [
-                        Icon(Icons.warning, color: Colors.white),
-                        SizedBox(width: 12),
-                        Text('Please enter an answer'),
+                        Icon(Icons.warning_amber_rounded, color: Colors.white),
+                        const SizedBox(width: 12),
+                        const Text('Please provide an answer before continuing'),
                       ],
                     ),
                     backgroundColor: Colors.orange.shade700,
@@ -685,10 +725,10 @@ class _AssessmentScreenState extends State<AssessmentScreen> with TickerProvider
                 );
               }
             },
-            icon: const Icon(Icons.send),
+            icon: const Icon(Icons.check_circle),
             label: const Text('Submit Answer'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue.shade700,
+              backgroundColor: Colors.green.shade600,
               padding: const EdgeInsets.symmetric(vertical: 18),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -696,6 +736,440 @@ class _AssessmentScreenState extends State<AssessmentScreen> with TickerProvider
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildMatchingQuestion(Question question) {
+    final pairs = question.matchingPairs ?? {};
+    if (pairs.isEmpty) return const Text('No matching pairs available.');
+
+    // Initialize selections if not present
+    if (!_matchingSelections.containsKey(question.id)) {
+      _matchingSelections[question.id] = {};
+    }
+    final selections = _matchingSelections[question.id]!;
+
+    final leftItems = pairs.keys.toList();
+    final rightItems = pairs.values.toList()..shuffle();
+
+    // Calculate which right items are still available
+    final usedRightItems = selections.values.where((v) => v != null).toSet();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Colors.indigo.shade50,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.indigo.shade200),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.drag_indicator, color: Colors.indigo.shade700, size: 20),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Drag items from the right to match with items on the left, or tap to select',
+                  style: TextStyle(
+                    fontSize: Responsive.fontSize(context, 13),
+                    color: Colors.indigo.shade900,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        // Available items to drag
+        Text(
+          'Available answers:',
+          style: TextStyle(
+            fontSize: Responsive.fontSize(context, 14),
+            fontWeight: FontWeight.bold,
+            color: Colors.grey.shade700,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: rightItems.where((r) => !usedRightItems.contains(r)).map((rightItem) {
+            return Draggable<String>(
+              data: rightItem,
+              feedback: Material(
+                elevation: 8,
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.indigo,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    rightItem,
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                  ),
+                ),
+              ),
+              childWhenDragging: Opacity(
+                opacity: 0.3,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.indigo.shade50,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.indigo.shade200),
+                  ),
+                  child: Text(
+                    rightItem,
+                    style: TextStyle(
+                      fontSize: Responsive.fontSize(context, 13),
+                      color: Colors.indigo.shade300,
+                    ),
+                  ),
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.indigo.shade50,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.indigo.shade300),
+                ),
+                child: Text(
+                  rightItem,
+                  style: TextStyle(
+                    fontSize: Responsive.fontSize(context, 13),
+                    color: Colors.indigo.shade700,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 24),
+        // Matching area
+        ...leftItems.asMap().entries.map((entry) {
+          final leftItem = entry.value;
+          final matched = selections[leftItem];
+          final colors = [Colors.blue, Colors.purple, Colors.teal, Colors.orange, Colors.pink];
+          final color = colors[entry.key % colors.length];
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final isMobile = constraints.maxWidth < 500;
+                if (isMobile) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildLeftMatchItem(leftItem, color),
+                      const SizedBox(height: 8),
+                      Center(
+                        child: Icon(Icons.arrow_downward, color: Colors.grey.shade400, size: 20),
+                      ),
+                      const SizedBox(height: 8),
+                      _buildRightMatchTarget(question.id, leftItem, matched, rightItems, usedRightItems, color),
+                    ],
+                  );
+                }
+                return Row(
+                  children: [
+                    Expanded(child: _buildLeftMatchItem(leftItem, color)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Icon(Icons.arrow_forward, color: Colors.grey.shade400, size: 24),
+                    ),
+                    Expanded(child: _buildRightMatchTarget(question.id, leftItem, matched, rightItems, usedRightItems, color)),
+                  ],
+                );
+              },
+            ),
+          );
+        }),
+        const SizedBox(height: 24),
+        // Submit matching button
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: selections.length == leftItems.length && selections.values.every((v) => v != null)
+                ? () {
+                    // Score based on correct matches
+                    int correct = 0;
+                    for (final left in leftItems) {
+                      if (selections[left] == pairs[left]) {
+                        correct++;
+                      }
+                    }
+                    final scorePercent = (correct / leftItems.length * 100).round();
+                    final answer = 'Matched $correct/${leftItems.length} correctly';
+                    _submitAnswer(answer, 0);
+                  }
+                : null,
+            icon: const Icon(Icons.check_circle),
+            label: Text(
+              selections.length == leftItems.length && selections.values.every((v) => v != null)
+                  ? 'Submit Matches'
+                  : 'Match all items to continue (${selections.values.where((v) => v != null).length}/${leftItems.length})',
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green.shade600,
+              disabledBackgroundColor: Colors.grey.shade300,
+              padding: const EdgeInsets.symmetric(vertical: 18),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLeftMatchItem(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color.withOpacity(0.4), width: 2),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(Icons.label, color: color, size: 18),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: Responsive.fontSize(context, 14),
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade800,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRightMatchTarget(
+    String questionId,
+    String leftItem,
+    String? matched,
+    List<String> rightItems,
+    Set<String?> usedRightItems,
+    Color color,
+  ) {
+    return DragTarget<String>(
+      onWillAcceptWithDetails: (details) => true,
+      onAcceptWithDetails: (details) {
+        setState(() {
+          // Remove previous assignment of this right item
+          _matchingSelections[questionId]?.removeWhere((k, v) => v == details.data);
+          _matchingSelections[questionId]?[leftItem] = details.data;
+        });
+      },
+      builder: (context, candidateData, rejectedData) {
+        final isHovering = candidateData.isNotEmpty;
+
+        if (matched != null) {
+          return Draggable<String>(
+            data: matched,
+            feedback: Material(
+              elevation: 8,
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  matched,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                ),
+              ),
+            ),
+            childWhenDragging: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Colors.grey.shade300, width: 2, style: BorderStyle.solid),
+              ),
+              child: const Center(child: Text('...')),
+            ),
+            onDragCompleted: () {
+              // If dragged somewhere else, it's handled by the target
+            },
+            child: GestureDetector(
+              onTap: () {
+                // Unassign on tap
+                setState(() {
+                  _matchingSelections[questionId]?[leftItem] = null;
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.check, color: Colors.white, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        matched,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: Responsive.fontSize(context, 13),
+                        ),
+                      ),
+                    ),
+                    const Icon(Icons.close, color: Colors.white70, size: 16),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
+        return GestureDetector(
+          onTap: () => _showMatchingPicker(questionId, leftItem, rightItems, usedRightItems),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: isHovering ? color.withOpacity(0.15) : Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: isHovering ? color : Colors.grey.shade300,
+                width: 2,
+                style: BorderStyle.solid,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  isHovering ? Icons.add_circle : Icons.touch_app,
+                  color: isHovering ? color : Colors.grey.shade400,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  isHovering ? 'Drop here' : 'Tap to match',
+                  style: TextStyle(
+                    color: isHovering ? color : Colors.grey.shade500,
+                    fontSize: Responsive.fontSize(context, 13),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showMatchingPicker(
+    String questionId,
+    String leftItem,
+    List<String> allRightItems,
+    Set<String?> usedRightItems,
+  ) {
+    final available = allRightItems.where((r) => !usedRightItems.contains(r) || _matchingSelections[questionId]?[leftItem] == r).toList();
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Select match for:',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  leftItem,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ...available.map((rightItem) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: ListTile(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: Colors.grey.shade200),
+                      ),
+                      tileColor: Colors.grey.shade50,
+                      leading: const Icon(Icons.circle_outlined),
+                      title: Text(rightItem),
+                      onTap: () {
+                        setState(() {
+                          _matchingSelections[questionId]?.removeWhere((k, v) => v == rightItem);
+                          _matchingSelections[questionId]?[leftItem] = rightItem;
+                        });
+                        Navigator.pop(ctx);
+                      },
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

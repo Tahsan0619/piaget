@@ -9,60 +9,6 @@ class AssessmentService {
 
   // Question bank organized by stage and criterion
   static final Map<String, List<Question>> questionBank = {
-    'preoperational': [
-      Question(
-        id: uuid.v4(),
-        text: 'If I pour water from a tall glass into a short, wide glass, does the amount of water change?',
-        criterion: 'Conservation',
-        stage: 'preoperational',
-        responseType: ResponseType.yesNo,
-        scoringRules: {
-          'yes': {'reasoning': 'perceptual', 'score': 20},
-          'no': {'reasoning': 'logical', 'score': 80},
-        },
-      ),
-      Question(
-        id: uuid.v4(),
-        text: 'Imagine a tree feels sad when its leaves fall. Is this true?',
-        criterion: 'Animistic Thinking',
-        stage: 'preoperational',
-        responseType: ResponseType.multipleChoice,
-        options: ['Yes, trees have feelings', 'Maybe sometimes', 'No, trees don\'t have feelings'],
-        scoringRules: {
-          'Yes, trees have feelings': {'reasoning': 'animistic', 'score': 20},
-          'Maybe sometimes': {'reasoning': 'developing', 'score': 50},
-          'No, trees don\'t have feelings': {'reasoning': 'logical', 'score': 90},
-        },
-      ),
-      Question(
-        id: uuid.v4(),
-        text: 'Does your friend see the same thing you see when looking at a picture?',
-        criterion: 'Egocentrism',
-        stage: 'preoperational',
-        responseType: ResponseType.yesNo,
-        scoringRules: {
-          'yes': {'reasoning': 'egocentric', 'score': 30},
-          'no': {'reasoning': 'decentered', 'score': 85},
-        },
-      ),
-      Question(
-        id: uuid.v4(),
-        text: 'When you pretend to be a doctor, what are you doing?',
-        criterion: 'Symbolic Thinking',
-        stage: 'preoperational',
-        responseType: ResponseType.multipleChoice,
-        options: [
-          'Really becoming a doctor',
-          'Using imagination to represent something',
-          'Playing with real medical tools'
-        ],
-        scoringRules: {
-          'Really becoming a doctor': {'reasoning': 'literal', 'score': 40},
-          'Using imagination to represent something': {'reasoning': 'symbolic', 'score': 90},
-          'Playing with real medical tools': {'reasoning': 'concrete', 'score': 55},
-        },
-      ),
-    ],
     'concreteOperational': [
       Question(
         id: uuid.v4(),
@@ -231,18 +177,6 @@ class AssessmentService {
 
   static List<Question> _getDefaultQuestions(CognitiveStage stage) {
     switch (stage) {
-      case CognitiveStage.sensorimotor:
-        return [
-          Question(
-            id: uuid.v4(),
-            text: 'When an object is hidden, does it still exist?',
-            criterion: 'Object Permanence',
-            stage: 'sensorimotor',
-            responseType: ResponseType.yesNo,
-          ),
-        ];
-      case CognitiveStage.preoperational:
-        return questionBank['preoperational'] ?? [];
       case CognitiveStage.concreteOperational:
         return questionBank['concreteOperational'] ?? [];
       case CognitiveStage.formalOperational:

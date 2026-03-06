@@ -16,10 +16,6 @@ extension CognitiveStageExtension on CognitiveStage {
   /// Get database-compatible enum value (snake_case)
   String get databaseValue {
     switch (this) {
-      case CognitiveStage.sensorimotor:
-        return 'sensorimotor';
-      case CognitiveStage.preoperational:
-        return 'preoperational';
       case CognitiveStage.concreteOperational:
         return 'concrete_operational';
       case CognitiveStage.formalOperational:
@@ -82,10 +78,6 @@ String stageDisplayNameToDatabaseValue(String displayName) {
   final stageName = displayName.split('(')[0].trim();
   
   switch (stageName.toLowerCase()) {
-    case 'sensorimotor':
-      return 'sensorimotor';
-    case 'preoperational':
-      return 'preoperational';
     case 'concrete operational':
       return 'concrete_operational';
     case 'formal operational':

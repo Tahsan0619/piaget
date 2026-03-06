@@ -60,6 +60,10 @@ dependencies:
   
   # Security
   crypto: ^3.0.3
+  
+  # PDF Generation & Printing
+  pdf: ^3.11.1
+  printing: ^5.13.3
 
 dev_dependencies:
   flutter_test:

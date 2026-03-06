@@ -74,9 +74,9 @@ class _AppNavigator extends StatelessWidget {
           );
         }
 
-        // If not authenticated, show login screen
+        // If not authenticated, show role selection screen
         if (!authProvider.isAuthenticated) {
-          return const LoginScreen();
+          return const RoleSelectionScreen();
         }
 
         // If authenticated, show dashboard

@@ -44,7 +44,8 @@ class DashboardScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
+          Flexible(
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -54,6 +55,8 @@ class DashboardScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 4),
               Container(
@@ -73,6 +76,8 @@ class DashboardScreen extends StatelessWidget {
               ),
             ],
           ),
+          ),
+          const SizedBox(width: 12),
           GestureDetector(
             onTap: () {
               showDialog(
@@ -142,54 +147,9 @@ class DashboardScreen extends StatelessWidget {
         return const TeacherDashboard();
       case UserRole.admin:
         return const AdminDashboard();
-      case UserRole.parent:
-        return _buildParentDashboard();
       default:
         return _buildDefaultDashboard();
     }
-  }
-
-  Widget _buildParentDashboard() {
-    return Center(
-      child: Container(
-        padding: const EdgeInsets.all(40),
-        margin: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.family_restroom, size: 80, color: Colors.grey.shade400),
-            const SizedBox(height: 24),
-            const Text(
-              'Parent Dashboard',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Parent dashboard features coming soon!',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey.shade600,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   Widget _buildDefaultDashboard() {
@@ -235,8 +195,6 @@ class DashboardScreen extends StatelessWidget {
         return [Colors.orange.shade700, Colors.orange.shade900];
       case UserRole.admin:
         return [Colors.red.shade700, Colors.red.shade900];
-      case UserRole.parent:
-        return [Colors.green.shade700, Colors.green.shade900];
       default:
         return [Colors.blue.shade700, Colors.purple.shade600];
     }
@@ -250,8 +208,6 @@ class DashboardScreen extends StatelessWidget {
         return Colors.orange.shade700;
       case UserRole.admin:
         return Colors.red.shade700;
-      case UserRole.parent:
-        return Colors.green.shade700;
       default:
         return Colors.blue.shade700;
     }

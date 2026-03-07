@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:piaget/models/user_model.dart';
+import 'package:piaget/models/assessment_model.dart';
 import 'package:piaget/providers/auth_provider.dart';
 import 'package:piaget/services/supabase_service.dart';
+import 'package:piaget/services/pdf_service.dart';
 import 'package:piaget/widgets/animations.dart';
 import 'package:piaget/utils/responsive.dart';
 import 'package:piaget/screens/teacher/student_browser_screen.dart';
@@ -867,6 +869,11 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
               ],
             ),
           ),
+          IconButton(
+            icon: Icon(Icons.picture_as_pdf, color: Colors.red.shade600, size: 22),
+            tooltip: 'View Latest PDF Report',
+            onPressed: () => _viewStudentLatestPdf(student),
+          ),
           if (averageScore != null)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -930,6 +937,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
     final stage = assessment['stage'] ?? 'N/A';
     final status = assessment['status'] ?? 'unknown';
     final score = assessment['overall_score']?.toDouble();
+    final sessionId = assessment['session_id'] ?? assessment['id'];
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -981,6 +989,12 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
               ],
             ),
           ),
+          if (status == 'completed')
+            IconButton(
+              icon: Icon(Icons.picture_as_pdf, color: Colors.red.shade600),
+              tooltip: 'Download PDF Report',
+              onPressed: () => _generateStudentPdf(assessment),
+            ),
           if (score != null)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -1000,5 +1014,138 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
         ],
       ),
     );
+  }
+
+  Future<void> _viewStudentLatestPdf(Map<String, dynamic> student) async {
+    final studentId = student['id'] as String?;
+    if (studentId == null) return;
+
+    try {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Loading latest assessment report...'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+
+      final assessments = await _supabase.getStudentAssessments(studentId, limit: 1);
+      if (assessments.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No completed assessments found for this student'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        return;
+      }
+
+      final latestAssessment = assessments.first;
+      latestAssessment['student_name'] = student['full_name'];
+      latestAssessment['student_age'] = student['age'];
+      latestAssessment['class_name'] = student['class_name'] ?? student['grade_level'];
+      await _generateStudentPdf(latestAssessment);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load assessment: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _generateStudentPdf(Map<String, dynamic> assessment) async {
+    final sessionId = assessment['session_id'] ?? assessment['id'];
+    if (sessionId == null) return;
+
+    try {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Generating PDF report...'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+
+      final resultData = await _supabase.getAssessmentResult(sessionId as String);
+      if (resultData == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No assessment result found for this session'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        return;
+      }
+
+      // Build AssessmentResult from DB data
+      final criteriaResults = <CriterionEvaluation>[];
+      if (resultData['criteria_results'] != null) {
+        final raw = resultData['criteria_results'];
+        List criteriaList;
+        if (raw is List) {
+          criteriaList = raw;
+        } else if (raw is Map) {
+          // If stored as a map, try to extract values or wrap as single item
+          criteriaList = raw.values.toList();
+        } else {
+          criteriaList = [];
+        }
+        for (final c in criteriaList) {
+          if (c is Map<String, dynamic>) {
+            criteriaResults.add(CriterionEvaluation(
+              criterionName: c['criterionName'] as String? ?? '',
+              status: CriterionStatus.values.byName(c['status'] as String? ?? 'developing'),
+              score: (c['score'] as num?)?.toDouble() ?? 0,
+              feedback: c['feedback'] as String? ?? '',
+            ));
+          }
+        }
+      }
+
+      List<String> _toStringList(dynamic value) {
+        if (value is List) return value.map((e) => e.toString()).toList();
+        if (value is Map) return value.values.map((e) => e.toString()).toList();
+        return [];
+      }
+
+      final result = AssessmentResult(
+        id: resultData['id']?.toString() ?? sessionId,
+        learnerId: resultData['student_id']?.toString() ?? '',
+        assessmentStage: resultData['stage']?.toString() ?? assessment['stage']?.toString() ?? '',
+        criteriaResults: criteriaResults,
+        identifiedStage: resultData['identified_stage']?.toString() ?? resultData['stage']?.toString() ?? '',
+        strengths: _toStringList(resultData['strengths']),
+        developmentAreas: _toStringList(resultData['development_areas']),
+        suggestedActivities: _toStringList(resultData['suggested_activities']),
+        completedAt: resultData['completed_at'] != null
+            ? DateTime.parse(resultData['completed_at'] as String)
+            : DateTime.now(),
+        overallScore: (resultData['overall_score'] as num?)?.toDouble() ?? 0,
+      );
+
+      final learner = LearnerProfile(
+        id: resultData['student_id']?.toString() ?? '',
+        name: assessment['student_name']?.toString() ?? 'Student',
+        age: (assessment['student_age'] as int?) ?? 0,
+        className: assessment['class_name']?.toString(),
+      );
+
+      await PdfService.generateAndShareReport(result, learner);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to generate PDF: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

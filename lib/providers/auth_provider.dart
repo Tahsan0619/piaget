@@ -323,9 +323,6 @@ class AuthProvider extends ChangeNotifier {
         case UserRole.student:
           _dashboardStats = await _supabase.getStudentDashboardStats(_currentUser!.id);
           break;
-        case UserRole.parent:
-          _dashboardStats = {};
-          break;
       }
       notifyListeners();
     } catch (e) {

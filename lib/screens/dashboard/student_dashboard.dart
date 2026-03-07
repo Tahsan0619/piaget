@@ -131,7 +131,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
   }
 
   Widget _buildAgeSelectionDialog() {
-    int selectedAge = 10;
+    int selectedAge = 7;
     return StatefulBuilder(
       builder: (context, setState) {
         return AlertDialog(
@@ -149,7 +149,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                items: List.generate(18, (index) => index + 3)
+                items: List.generate(14, (index) => index + 7)
                     .map((age) => DropdownMenuItem(
                           value: age,
                           child: Text('$age years old'),

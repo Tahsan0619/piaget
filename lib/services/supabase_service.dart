@@ -164,9 +164,6 @@ class SupabaseService {
           'permission_level': 1,
         });
         break;
-      case UserRole.parent:
-        // For parents, we can use the base user profile
-        break;
     }
   }
 

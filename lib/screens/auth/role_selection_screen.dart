@@ -190,22 +190,7 @@ class RoleSelectionScreen extends StatelessWidget {
               },
             ),
           ),
-          const SizedBox(height: 16),
-          SlideInAnimation(
-            duration: const Duration(milliseconds: 600),
-            delay: const Duration(milliseconds: 500),
-            child: _RoleCard(
-              icon: Icons.family_restroom,
-              title: 'Parent',
-              description: 'Monitor your child\'s development',
-              color: Colors.green,
-              onTap: () {
-                final authProvider = context.read<AuthProvider>();
-                authProvider.setUserRole(UserRole.parent);
-                Navigator.of(context).pushNamed('/login');
-              },
-            ),
-          ),
+
         ],
       ),
     );
